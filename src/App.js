@@ -1,4 +1,4 @@
-
+import React, { Component } from 'react';
 import './App.css';
 import Person from './Person/Person'
 import UserInput from './Assignments/Assignment1/UserInput/UserInput'
@@ -6,10 +6,21 @@ import UserOutput from './Assignments/Assignment1/UserOutput/UserOutput'
 import StringLength from './Assignments/Assignment2/StringLength/StringLength'
 import ValidationComponent from './Assignments/Assignment2/StringLength/ValidationComponent'
 import CharComponent from './Assignments/Assignment2/StringLength/CharComponent'
-import Radium, {StyleRoot} from 'radium';
+import styled from 'styled-components'
 
+const StyledButton = styled.button`
+  background-color: ${props => props.alt ? 'red' : 'green'};
+  color: white;
+  font: inherit;
+  border: 1px solid blue;
+  padding: 8px;
+  cursor: pointer;
+  &:hover {
+    background-color: ${props => props.alt ? 'blue' : 'lightgreen'};
+    color: black;
+  }
+`;
 //Classed based component
-import React, { Component } from 'react';
 class App extends Component {
   state = {
     persons:  [
@@ -148,37 +159,22 @@ class App extends Component {
         })}
         </div>
       );
-
-      style.backgroundColor = 'red'
-      style[':hover'] =  {
-        backgroundColor: 'blue',
-        color: 'black'
-      }
     }
     
-    const classes = []
-    if (this.state.persons.length <= 2){
-      classes.push('red');
-    }
-    if (this.state.persons.length <= 1){
-      classes.push('bold');
-    }
     return (
-      <StyleRoot>
-        <div className="App">
-          <p className = {classes.join(' ')}>Hi I'm a React App</p>
-          <button 
-          style = {style}
-          onClick = {this.togglePersonsHandler}>Switch Name</button>
-          
-          { content }
+      <div className="App">
+        <p className = {classes.join(' ')}>Hi I'm a React App</p>
+        <StyledButton 
+        alt={this.state.showPersons}
+        onClick = {this.togglePersonsHandler}>Switch Name</StyledButton>
+        
+        { content }
 
-        </div>
-      </StyleRoot>
+      </div>
     );
   }
 }
-export default Radium(App);
+export default App;
 
 
 //Functional based componenet
