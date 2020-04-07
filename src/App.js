@@ -6,6 +6,7 @@ import UserOutput from './Assignments/Assignment1/UserOutput/UserOutput'
 import StringLength from './Assignments/Assignment2/StringLength/StringLength'
 import ValidationComponent from './Assignments/Assignment2/StringLength/ValidationComponent'
 import CharComponent from './Assignments/Assignment2/StringLength/CharComponent'
+import Radium, {StyleRoot} from 'radium';
 
 //Classed based component
 import React, { Component } from 'react';
@@ -92,11 +93,16 @@ class App extends Component {
 
   render() {
     const style = {
-      backgroundColor: "white",
+      backgroundColor: "green",
+      color: "white",
       font: "inherit",
       border: '1px solid blue',
       padding: '8px',
-      cursor: 'pointer'
+      cursor: 'pointer',
+      ':hover': {
+        backgroundColor: 'lightgreen',
+        color: 'black'
+      }
     }
     const Greeting = () =><h1>Hello World today!</h1>;
     
@@ -115,7 +121,7 @@ class App extends Component {
             key = {stringlength.id}
           />
         })}
-
+        
         <ValidationComponent comment= {this.state.stringLength[0].slength}/>
 
         {/* <CharComponent char = {this.state.charArray[0].letters[0]}/> */}
@@ -127,10 +133,10 @@ class App extends Component {
           />
         })}
 
-        <UserInput changed = {this.switchUsernameHandler} val = {this.state.useroutput[0].username}/>
+        {/* <UserInput changed = {this.switchUsernameHandler} val = {this.state.useroutput[0].username}/>
         <UserOutput username={this.state.useroutput[0].username}/>
         <UserOutput username={this.state.useroutput[1].username}/>
-        <UserOutput username={this.state.useroutput[2].username}/>
+        <UserOutput username={this.state.useroutput[2].username}/> */}
 
         {this.state.persons.map((person, index) => {
           return <Person 
@@ -142,22 +148,37 @@ class App extends Component {
         })}
         </div>
       );
+
+      style.backgroundColor = 'red'
+      style[':hover'] =  {
+        backgroundColor: 'blue',
+        color: 'black'
+      }
     }
     
+    const classes = []
+    if (this.state.persons.length <= 2){
+      classes.push('red');
+    }
+    if (this.state.persons.length <= 1){
+      classes.push('bold');
+    }
     return (
-      <div className="App">
-        <h1>Hi I'm a React App</h1>
-        <button 
-        style = {style}
-        onClick = {this.togglePersonsHandler}>Switch Name</button>
-        
-        { content }
+      <StyleRoot>
+        <div className="App">
+          <p className = {classes.join(' ')}>Hi I'm a React App</p>
+          <button 
+          style = {style}
+          onClick = {this.togglePersonsHandler}>Switch Name</button>
+          
+          { content }
 
-      </div>
+        </div>
+      </StyleRoot>
     );
   }
 }
-export default App;
+export default Radium(App);
 
 
 //Functional based componenet
