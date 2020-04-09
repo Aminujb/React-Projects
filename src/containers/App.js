@@ -1,27 +1,23 @@
 import React, { Component } from 'react';
 import './App.css';
-import Person from './Person/Person'
-import UserInput from './Assignments/Assignment1/UserInput/UserInput'
-import UserOutput from './Assignments/Assignment1/UserOutput/UserOutput'
-import StringLength from './Assignments/Assignment2/StringLength/StringLength'
-import ValidationComponent from './Assignments/Assignment2/StringLength/ValidationComponent'
-import CharComponent from './Assignments/Assignment2/StringLength/CharComponent'
-import styled from 'styled-components'
+// import UserInput from '../Assignments/Assignment1/UserInput/UserInput'
+// import UserOutput from '../Assignments/Assignment1/UserOutput/UserOutput'
+import StringLength from '../Assignments/Assignment2/StringLength/StringLength'
+import ValidationComponent from '../Assignments/Assignment2/StringLength/ValidationComponent'
+import CharComponent from '../Assignments/Assignment2/StringLength/CharComponent'
+import Persons from '../components/Persons/Persons'
+import Cockpit from '../components/Cockpit/Cockpit'
+import AuthContext from '../context/auth-context'
 
-const StyledButton = styled.button`
-  background-color: ${props => props.alt ? 'red' : 'green'};
-  color: white;
-  font: inherit;
-  border: 1px solid blue;
-  padding: 8px;
-  cursor: pointer;
-  &:hover {
-    background-color: ${props => props.alt ? 'blue' : 'lightgreen'};
-    color: black;
-  }
-`;
+
+
 //Classed based component
 class App extends Component {
+  constructor(props){
+    super(props);
+    console.log('[App.js] constructor');
+  }
+
   state = {
     persons:  [
       {id : "a", name:"jb", age:"25"},
@@ -34,6 +30,9 @@ class App extends Component {
       {username:"jaybee"},
     ],
     showPersons : false,
+    changeCounter : 0,
+    showCockpit : true,
+    authenticated : false,
     stringLength : [
       {id : 'a1', sWord: "Test", slength : 0}
     ],
@@ -42,6 +41,28 @@ class App extends Component {
     ]
   }
   
+  static getDerivedStateFromProps(props, state){
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+
+  // componentWillMount(){
+  //   console.log('[App.js] componentWillMount')
+  // }
+
+  componentDidMount(){
+    console.log('[App.js] componentDidMount');
+  }
+
+  shouldComponentUpdate(){
+    console.log('[App.js] shouldComponentUpdate');
+    return true;
+  }
+
+  componentDidUpdate(){
+    console.log('[Apps.js] componentDidUpdate')
+  }
+
   nameChangedHandler = (event, id) =>{
     const personIndex = this.state.persons.findIndex(p => {
       return p.id === id;
@@ -54,8 +75,11 @@ class App extends Component {
     const persons = [...this.state.persons];
     persons[personIndex] = person;
 
-    this.setState({
-      persons: persons
+    this.setState((prevState, props) =>{
+      return {
+        persons: persons,
+        changeCounter: prevState.changeCounter + 1
+      }
     });
   }
 
@@ -102,19 +126,12 @@ class App extends Component {
     
   }
 
+  loginHandler = ()=> this.setState({authenticated : true})
+
+
   render() {
-    const style = {
-      backgroundColor: "green",
-      color: "white",
-      font: "inherit",
-      border: '1px solid blue',
-      padding: '8px',
-      cursor: 'pointer',
-      ':hover': {
-        backgroundColor: 'lightgreen',
-        color: 'black'
-      }
-    }
+    console.log('[App.js] render');
+
     const Greeting = () =><h1>Hello World today!</h1>;
     
     let content = null;
@@ -123,7 +140,7 @@ class App extends Component {
       content = (
         <div>
         <Greeting/>
-
+        
         {this.state.stringLength.map((stringlength) => {
           return <StringLength
             changed = {this.changeLengthHandler}
@@ -149,27 +166,36 @@ class App extends Component {
         <UserOutput username={this.state.useroutput[1].username}/>
         <UserOutput username={this.state.useroutput[2].username}/> */}
 
-        {this.state.persons.map((person, index) => {
-          return <Person 
-          click={() => this.deletePersonHandler(index)}
-          name={person.name}
-          age={person.age}
-          key = {person.id}
-          changed={(event) => this.nameChangedHandler(event, person.id)} />
-        })}
+        <Persons 
+        persons ={this.state.persons}
+        clicked={this.deletePersonHandler}
+        changed={this.nameChangedHandler} />
         </div>
       );
     }
     
+    
     return (
       <div className="App">
-        <p className = {classes.join(' ')}>Hi I'm a React App</p>
-        <StyledButton 
-        alt={this.state.showPersons}
-        onClick = {this.togglePersonsHandler}>Switch Name</StyledButton>
+      <button onClick={ () => {
+        this.setState({showCockpit: false})
+      }}>Remove Cockpit</button>
+        
+        <AuthContext.Provider
+        value={{
+          authenticated : this.state.authenticated,
+          login  : this.loginHandler
+        }}>
+          {this.state.showCockpit ? <Cockpit
+          title = {this.props.appTitle}
+          persons ={this.state.persons}
+          personsLength={this.state.persons.length}
+          showPersons = {this.state.showPersons}
+          click = {this.togglePersonsHandler}
+        /> : null}
         
         { content }
-
+        </AuthContext.Provider>
       </div>
     );
   }
